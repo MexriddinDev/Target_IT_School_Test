@@ -13,7 +13,7 @@ class StudentController extends Controller
      */
     public function index()
     {
-        //
+        return Student::with('course')->get();
     }
 
     /**
@@ -21,7 +21,7 @@ class StudentController extends Controller
      */
     public function create()
     {
-        //
+
     }
 
     /**
@@ -29,7 +29,13 @@ class StudentController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|email|unique:students,email',
+            'course_id' => 'required|exists:courses,id',
+        ]);
+
+        return Student::create($validated);
     }
 
     /**
@@ -37,7 +43,7 @@ class StudentController extends Controller
      */
     public function show(Student $student)
     {
-        //
+        return Student::with('course')->findOrFail($student->id);
     }
 
     /**
@@ -45,7 +51,7 @@ class StudentController extends Controller
      */
     public function edit(Student $student)
     {
-        //
+
     }
 
     /**
@@ -53,7 +59,14 @@ class StudentController extends Controller
      */
     public function update(Request $request, Student $student)
     {
-        //
+        $validated = $request->validate([
+            'name' => 'sometimes|required|string|max:255',
+            'email' => 'sometimes|required|email|unique:students,email,' . $student->id,
+            'course_id' => 'sometimes|required|exists:courses,id',
+        ]);
+
+        $student->update($validated);
+        return $student;
     }
 
     /**
@@ -61,6 +74,8 @@ class StudentController extends Controller
      */
     public function destroy(Student $student)
     {
-        //
+        $student = Student::findOrFail($student->id);
+        $student->delete();
+        return response()->json(['message' => 'Student deleted successfully'], 200);
     }
 }

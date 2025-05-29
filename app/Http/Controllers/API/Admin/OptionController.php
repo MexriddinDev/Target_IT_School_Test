@@ -4,7 +4,9 @@ namespace App\Http\Controllers\API\Admin;
 
 use App\Http\Controllers\API\Controller;
 use App\Models\Admin\Option;
+use App\Models\Admin\Question;
 use Illuminate\Http\Request;
+use function Pest\Laravel\json;
 
 class OptionController extends Controller
 {
@@ -13,7 +15,7 @@ class OptionController extends Controller
      */
     public function index()
     {
-        return Option::all();
+        return Question::with('options')->get();
     }
 
     /**
@@ -33,7 +35,7 @@ class OptionController extends Controller
             'question_id' => 'required|integer|exists:questions,id',
             'is_correct'  => 'required|boolean',
             'option_text' => 'required|string',
-            'match_key'   => 'required|string',
+            'match_key'   => 'nullable|string',
         ]);
 
         return Option::create($validated);
@@ -64,12 +66,12 @@ class OptionController extends Controller
         $validated = $request->validate([
             'question_id' => 'required|integer|exists:questions,id',
             'is_correct'  => 'required|boolean',
-            'option_text' => 'nullable|string',
+            'option_text' => 'required|string',
             'match_key'   => 'nullable|string',
         ]);
 
         $option->update($validated);
-        return $option;
+        return response()->json($option, 200);
     }
 
     /**

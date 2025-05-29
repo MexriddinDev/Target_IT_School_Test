@@ -22,11 +22,11 @@ class Option extends Model
             return $this->belongsTo(Question::class, 'question_id');
         }
 
-        public function studentAnswers(){
-            return $this->hasMany(StudentAnswer::class, 'selected_option_id');
+        public function selectedOption(){
+            return $this->hasMany(StudentAnswer::class, 'option_id');
         }
 
-        public function matchedStudentAnswers(){
+        public function matchedOption(){
             return $this->hasMany(StudentAnswer::class, 'matched_option_id');
         }
 }
